@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="PosDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="TblCategory">
+    <Key>
+      <PropertyRef Name="Category" />
+    </Key>
+    <Property Name="Category" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CategoryName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="TblProducts" Relationship="Self.FK_TblProduct_TblCategory" FromRole="TblCategory" ToRole="TblProduct" />
+  </EntityType>
+  <EntityType Name="TblProduct">
+    <Key>
+      <PropertyRef Name="ProductID" />
+    </Key>
+    <Property Name="ProductID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Category" Type="Int32" Nullable="false" />
+    <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Price" Type="Int32" Nullable="false" />
+    <Property Name="Image" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+    <NavigationProperty Name="TblCategory" Relationship="Self.FK_TblProduct_TblCategory" FromRole="TblProduct" ToRole="TblCategory" />
+    <NavigationProperty Name="TblTransactionItems" Relationship="Self.FK_TblTransactionItem_TblProduct" FromRole="TblProduct" ToRole="TblTransactionItem" />
+  </EntityType>
+  <EntityType Name="TblTransaction">
+    <Key>
+      <PropertyRef Name="TransactionID" />
+    </Key>
+    <Property Name="TransactionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="3" />
+    <NavigationProperty Name="TblTransactionItems" Relationship="Self.FK_TblTransactionItem_TblTransaction" FromRole="TblTransaction" ToRole="TblTransactionItem" />
+  </EntityType>
+  <EntityType Name="TblTransactionItem">
+    <Key>
+      <PropertyRef Name="TransactionItemID" />
+    </Key>
+    <Property Name="TransactionItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TransactionID" Type="Int32" Nullable="false" />
+    <Property Name="ProductID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="TblProduct" Relationship="Self.FK_TblTransactionItem_TblProduct" FromRole="TblTransactionItem" ToRole="TblProduct" />
+    <NavigationProperty Name="TblTransaction" Relationship="Self.FK_TblTransactionItem_TblTransaction" FromRole="TblTransactionItem" ToRole="TblTransaction" />
+  </EntityType>
+  <Association Name="FK_TblProduct_TblCategory">
+    <End Role="TblCategory" Type="Self.TblCategory" Multiplicity="1" />
+    <End Role="TblProduct" Type="Self.TblProduct" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TblCategory">
+        <PropertyRef Name="Category" />
+      </Principal>
+      <Dependent Role="TblProduct">
+        <PropertyRef Name="Category" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_TblTransactionItem_TblProduct">
+    <End Role="TblProduct" Type="Self.TblProduct" Multiplicity="1" />
+    <End Role="TblTransactionItem" Type="Self.TblTransactionItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TblProduct">
+        <PropertyRef Name="ProductID" />
+      </Principal>
+      <Dependent Role="TblTransactionItem">
+        <PropertyRef Name="ProductID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_TblTransactionItem_TblTransaction">
+    <End Role="TblTransaction" Type="Self.TblTransaction" Multiplicity="1" />
+    <End Role="TblTransactionItem" Type="Self.TblTransactionItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TblTransaction">
+        <PropertyRef Name="TransactionID" />
+      </Principal>
+      <Dependent Role="TblTransactionItem">
+        <PropertyRef Name="TransactionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="PosDbEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="TblCategories" EntityType="Self.TblCategory" />
+    <EntitySet Name="TblProducts" EntityType="Self.TblProduct" />
+    <EntitySet Name="TblTransactions" EntityType="Self.TblTransaction" />
+    <EntitySet Name="TblTransactionItems" EntityType="Self.TblTransactionItem" />
+    <AssociationSet Name="FK_TblProduct_TblCategory" Association="Self.FK_TblProduct_TblCategory">
+      <End Role="TblCategory" EntitySet="TblCategories" />
+      <End Role="TblProduct" EntitySet="TblProducts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_TblTransactionItem_TblProduct" Association="Self.FK_TblTransactionItem_TblProduct">
+      <End Role="TblProduct" EntitySet="TblProducts" />
+      <End Role="TblTransactionItem" EntitySet="TblTransactionItems" />
+    </AssociationSet>
+    <AssociationSet Name="FK_TblTransactionItem_TblTransaction" Association="Self.FK_TblTransactionItem_TblTransaction">
+      <End Role="TblTransaction" EntitySet="TblTransactions" />
+      <End Role="TblTransactionItem" EntitySet="TblTransactionItems" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
